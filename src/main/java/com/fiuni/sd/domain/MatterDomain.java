@@ -14,7 +14,7 @@ public class MatterDomain implements BaseDomain{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter @Setter @Column(name = "id", nullable = false, unique = true)
-    private Long id;
+    private Integer id;
 
     @Getter @Setter @Column(name = "name")
     private String name;

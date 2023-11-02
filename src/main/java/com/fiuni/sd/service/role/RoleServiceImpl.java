@@ -67,7 +67,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleDto, RoleDomain, RoleLi
     }
 
     @Override
-    protected RoleDto convertDomainToDto(RoleDomain domain) {
+    public RoleDto convertDomainToDto(RoleDomain domain) {
         RoleDto dto = new RoleDto();
         dto.setId(domain.getId());
         dto.setName(domain.getName());
@@ -76,7 +76,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleDto, RoleDomain, RoleLi
     }
 
     @Override
-    protected RoleDomain convertDtoToDomain(RoleDto dto) {
+    public RoleDomain convertDtoToDomain(RoleDto dto) {
         RoleDomain domain = new RoleDomain();
         domain.setId(dto.getId());
         domain.setName(dto.getName());

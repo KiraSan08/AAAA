@@ -6,7 +6,7 @@ import com.fiuni.sd.dto.base.BaseListDto;
 
 public abstract class BaseServiceImpl<DTO extends BaseDto, DOMAIN extends BaseDomain, LIST_DTO extends BaseListDto<DTO>> implements IBaseService<DTO, LIST_DTO> {
 
-	protected abstract DTO convertDomainToDto(final DOMAIN domain);
-	protected abstract DOMAIN convertDtoToDomain(final DTO dto);
+	public abstract DTO convertDomainToDto(final DOMAIN domain);
+	public abstract DOMAIN convertDtoToDomain(final DTO dto);
     
 }

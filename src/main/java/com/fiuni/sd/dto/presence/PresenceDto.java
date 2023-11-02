@@ -1,6 +1,9 @@
 package com.fiuni.sd.dto.presence;
+import java.util.Date;
+
 import com.fiuni.sd.dto.base.BaseDto;
-import com.fiuni.sd.dto.student.StudentDto;
+// import com.fiuni.sd.dto.matter.MatterDto;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,36 +17,13 @@ public class PresenceDto extends BaseDto {
     
     @Getter
     @Setter
-    private Integer presenceId;
+    private Integer matterId;
 
     @Getter
     @Setter
-    private String attendanceDate;
+    private Date date;
 
-    @Getter
-    @Setter
-    private Boolean isPresent;
-
-    @Getter
-    @Setter
-    private String notes;
-
-    @Getter
-    @Setter
-    private StudentDto student; // Agregamos la propiedad student para mapear la relación con StudentDto
-
-    @Getter
-    @Setter
-    private Integer studentId;
-    
   }
-
-  // @Getter
-    // @Setter
-    // private MatterDto matter;
-
-    // Otros campos relacionados con la asistencia, como el estado (presente, ausente, etc.)
-
 
 
 

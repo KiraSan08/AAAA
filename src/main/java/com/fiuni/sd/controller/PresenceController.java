@@ -1,4 +1,5 @@
 package com.fiuni.sd.controller;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fiuni.sd.dto.presence.PresenceDto;
 import com.fiuni.sd.dto.presence.PresenceListDto;
@@ -14,13 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RestController
 @RequestMapping("/api/presences")
 public class PresenceController {
-
+    
     @Autowired
     private IPresenceService presenceService;
 
-    @GetMapping()
-    public PresenceListDto get(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
-        return presenceService.get(PageRequest.of(page, size));
+    @Value("${pagination.size:10}")
+    private Integer pageSize;
+
+    @GetMapping("/page/{page}")
+    public PresenceListDto get(@PathVariable Integer page) {
+        return presenceService.get(PageRequest.of(page, pageSize));
+
     }
 
     @GetMapping("/{id}")
@@ -46,11 +51,9 @@ public class PresenceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PresenceDto> delete(@PathVariable final Integer id) {
-        try {
-            return ResponseEntity.ok(presenceService.delete(id));
-        } catch (Exception ex) {
-            return ResponseEntity.noContent().build();
-        }
+    public PresenceDto delete(@PathVariable Integer id) {
+        return presenceService.delete(id);
     }
+
+    
 }

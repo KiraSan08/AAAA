@@ -1,33 +1,35 @@
 package com.fiuni.sd.service.presence;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fiuni.sd.dao.IMatterDao;
 import com.fiuni.sd.dao.IPresenceDao;
-import com.fiuni.sd.dao.IStudentDao;
 import com.fiuni.sd.dto.presence.PresenceDto;
 import com.fiuni.sd.dto.presence.PresenceListDto;
-import com.fiuni.sd.dto.student.StudentDto;
+import com.fiuni.sd.dto.matter.MatterDto;
 import com.fiuni.sd.exception.ResourceNotFoundException;
+import com.fiuni.sd.domain.MatterDomain;
 import com.fiuni.sd.domain.PresenceDomain;
-import com.fiuni.sd.domain.StudentDomain;
 import com.fiuni.sd.service.base.BaseServiceImpl;
 
 @Service
-public class PresenceServiceImpl extends BaseServiceImpl<PresenceDto, PresenceDomain, PresenceListDto>
+public class PresenceServiceImpl extends BaseServiceImpl<PresenceDto, PresenceDomain, PresenceListDto> 
         implements IPresenceService {
 
     @Autowired
-    private IPresenceDao presenceDao;
+    private IMatterDao matterDao;
+
+   
 
     @Autowired
-    private IStudentDao studentDao;
+    private IPresenceDao presenceDao;
 
     @Override
     public PresenceListDto get(Pageable pageable) {
@@ -55,42 +57,46 @@ public class PresenceServiceImpl extends BaseServiceImpl<PresenceDto, PresenceDo
 
     @Override
     public PresenceDto create(PresenceDto dto) {
-        // Verifica si el estudiante con el ID proporcionado existe
-        Optional<StudentDomain> existingStudent = studentDao.findById(dto.getStudent().getId());
+        PresenceDomain presence = convertDtoToDomain(dto);
 
-        if (existingStudent.isPresent()) {
-            // El estudiante existe, crea la presencia y asígnale el estudiante existente
-            PresenceDomain presence = convertDtoToDomain(dto);
-            presence.setStudent(existingStudent.get());
-            PresenceDomain createdPresence = presenceDao.save(presence);
-            return convertDomainToDto(createdPresence);
-        } else {
-            // El estudiante no existe, muestra un mensaje de error o realiza la acción
-            // adecuada
-            throw new ResourceNotFoundException("Student", "id", dto.getStudent().getId());
-        }
+        // Verifica si la materia con el ID proporcionado existe
+        // MatterDto matterDto = dto.getMatter();
+        // if (matterDto != null) {
+        //     // Asigna la materia a la presencia si es válida
+        //     presence.setMatter(null);;
+        // } else {
+        //     // Maneja el error si la materia es nula
+        //     throw new ResourceNotFoundException("Matter", "id", null);
+        // }
+
+        PresenceDomain createdPresence = presenceDao.save(presence);
+        return convertDomainToDto(createdPresence);
     }
 
     @Override
-    public PresenceDto update(Integer id, PresenceDto dto) {
-        PresenceDto currentPresence = presenceDao.findById(id).map(this::convertDomainToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Presence", "id", id));
+public PresenceDto  update(Integer id, PresenceDto dto) {
+    MatterDto matterD = new MatterDto(1, "Fisica");
+    PresenceDomain currentPresence = presenceDao.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Presence", "id", id));
 
-        currentPresence.setId(currentPresence.getId());
-
-        // Actualizar la relación con StudentDomain
-        if (dto.getStudent() != null) {
-            currentPresence.setStudent(dto.getStudent());
-        } else {
-            currentPresence.setStudent(currentPresence.getStudent());
-        }
-
-        // Actualizar otros campos en PresenceDto si es necesario
-        currentPresence.setIsPresent(dto.getIsPresent() == null ? currentPresence.getIsPresent() : dto.getIsPresent());
-        currentPresence.setNotes(dto.getNotes() == null ? currentPresence.getNotes() : dto.getNotes());
-
-        return convertDomainToDto(presenceDao.save(convertDtoToDomain(currentPresence)));
+    // Actualiza la relación con MatterDomain si la materia no es nula
+    Integer matterDto = dto.getMatterId();
+    if (matterDto != null) {
+        // Aquí realizas la lógica para actualizar la materia en el PresenceDomain
+        currentPresence.setMatter(convertMatterDtoToDomain(matterD));
     }
+
+    // Actualiza otros campos en PresenceDomain si es necesario
+    if (dto.getDate() != null) {
+        currentPresence.setDate(dto.getDate());
+    }
+
+    // Guarda los cambios en la base de datos
+    currentPresence = presenceDao.save(currentPresence);
+
+    // Convierte el PresenceDomain actualizado a un PresenceDto y lo devuelve
+    return convertDomainToDto(currentPresence);
+}
 
     @Override
     public PresenceDto delete(Integer id) {
@@ -100,47 +106,49 @@ public class PresenceServiceImpl extends BaseServiceImpl<PresenceDto, PresenceDo
         return dto;
     }
 
+    
+
     @Override
-    protected PresenceDto convertDomainToDto(PresenceDomain domain) {
+    public PresenceDto convertDomainToDto(PresenceDomain domain) {
+        // MatterDto matterD = new MatterDto(1, "matematica"); 
+       
         PresenceDto dto = new PresenceDto();
-
+        dto.setMatterId(domain.getMatter().getId());
         dto.setId(domain.getId());
-
-        // Convertir StudentDomain a StudentDto
-        StudentDto studentDto = convertStudentDomainToDto(domain.getStudent());
-        dto.setStudent(studentDto);
-
-        dto.setIsPresent(domain.getIsPresent());
-        dto.setNotes(domain.getNotes());
+        // dto.setMatterId(1);
+        dto.setDate(domain.getDate());
 
         return dto;
     }
 
-    private StudentDto convertStudentDomainToDto(StudentDomain studentDomain) {
-        StudentDto studentDto = new StudentDto();
+    public MatterDomain convertMatterDtoToDomain(MatterDto matterDto) {
+    MatterDomain matterDomain = new MatterDomain();
+    matterDomain.setId(matterDto.getId());
+    // Asigna otros atributos si es necesario
+    return matterDomain;
+}
 
-        // Convierte Long a Integer
-        studentDto.setId(studentDomain.getId() != null ? studentDomain.getId().intValue() : null);
-
-        // Otros mapeos de propiedades si es necesario
-
-        return studentDto;
-    }
 
     @Override
-    protected PresenceDomain convertDtoToDomain(PresenceDto dto) {
+    public PresenceDomain convertDtoToDomain(PresenceDto dto) {
         PresenceDomain domain = new PresenceDomain();
-
         domain.setId(dto.getId());
 
-        // Busca y asigna el estudiante existente por su ID
-        StudentDomain student = studentDao.findById(dto.getStudent().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", dto.getStudent().getId()));
-        domain.setStudent(student);
+        
 
-        domain.setIsPresent(dto.getIsPresent());
-        domain.setNotes(dto.getNotes());
+        MatterDomain matterDomain = matterDao.findById(dto.getMatterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Matter", "id", dto.getMatterId()));
+        domain.setMatter(matterDomain);
+
+        // MatterDomain matterDo= new MatterDomain();
+        // matterDo.setId(1);
+        // matterDo.setName("Algebra");
+        // // matterDo.setSemester(");
+        // // domain.setMatter(matterDo);
+        domain.setDate(dto.getDate());
 
         return domain;
     }
+
+    
 }

@@ -2,6 +2,9 @@ package com.fiuni.sd.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
@@ -12,7 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "presence")
+@Table(name = "presences")
 public class PresenceDomain implements BaseDomain {
 
     private static final long serialVersionUID = 1L;
@@ -33,5 +36,6 @@ public class PresenceDomain implements BaseDomain {
     @Getter
     @Setter
     @Column(name = "date")
-    private Integer date;
+    private Date date;
 }
+

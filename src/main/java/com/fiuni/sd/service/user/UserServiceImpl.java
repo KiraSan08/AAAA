@@ -68,7 +68,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDto, UserDomain, UserLi
     }
 
     @Override
-    protected UserDto convertDomainToDto(UserDomain domain) {
+    public UserDto convertDomainToDto(UserDomain domain) {
         UserDto dto = new UserDto();
         dto.setId(domain.getId());
         dto.setEmail(domain.getEmail());
@@ -77,7 +77,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDto, UserDomain, UserLi
     }
 
     @Override
-    protected UserDomain convertDtoToDomain(UserDto dto) {
+    public UserDomain convertDtoToDomain(UserDto dto) {
         UserDomain domain = new UserDomain();
         domain.setId(dto.getId());
         domain.setEmail(dto.getEmail());

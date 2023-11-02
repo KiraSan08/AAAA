@@ -83,7 +83,7 @@ public class SalePointServiceImpl extends BaseServiceImpl<SalePointDto, SalePoin
     }
 
     @Override
-    protected SalePointDto convertDomainToDto(SalePointDomain domain) {
+    public SalePointDto convertDomainToDto(SalePointDomain domain) {
         SalePointDto dto = new SalePointDto();
         dto.setId(domain.getId());
         dto.setInvoiceStampNumber(domain.getInvoiceStampNumber());
@@ -96,7 +96,7 @@ public class SalePointServiceImpl extends BaseServiceImpl<SalePointDto, SalePoin
     }
 
     @Override
-    protected SalePointDomain convertDtoToDomain(SalePointDto dto) {
+    public SalePointDomain convertDtoToDomain(SalePointDto dto) {
         SalePointDomain domain = new SalePointDomain();
         domain.setId(dto.getId());
         domain.setInvoiceStampNumber(dto.getInvoiceStampNumber());
